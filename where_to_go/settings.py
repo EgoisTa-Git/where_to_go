@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'where_to_go_map.apps.WhereToGoMapConfig',
+    'places.apps.PlacesConfig',
 ]
 
 MIDDLEWARE = [
