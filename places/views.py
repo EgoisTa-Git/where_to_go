@@ -29,7 +29,7 @@ def index(request):
 
 def place_detail(request, place_id):
     place = get_object_or_404(Place, pk=place_id)
-    images = place.images.all()
+    images = place.images.all().order_by('position')
     image_urls = []
     for image in images:
         image_urls.append(image.image.url)
@@ -44,8 +44,3 @@ def place_detail(request, place_id):
         },
     }
     return JsonResponse(content, safe=True)
-
-
-def place_detail2(request, place_id):
-    place = get_object_or_404(Place, pk=place_id)
-    return HttpResponse(place.title)
