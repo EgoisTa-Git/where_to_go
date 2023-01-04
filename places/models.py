@@ -14,15 +14,11 @@ class Place(models.Model):
         'Описание',
         blank=True,
     )
-    lng_coordinate = models.DecimalField(
+    lng_coordinate = models.FloatField(
         'Долгота',
-        max_digits=16,
-        decimal_places=14,
     )
-    lat_coordinate = models.DecimalField(
+    lat_coordinate = models.FloatField(
         'Широта',
-        max_digits=16,
-        decimal_places=14,
     )
 
     def __str__(self):
