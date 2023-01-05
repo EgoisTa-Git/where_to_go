@@ -28,11 +28,9 @@ class Place(models.Model):
 class Image(models.Model):
     image = models.ImageField(
         'Картинка',
-        blank=True,
     )
     position = models.IntegerField(
         'Позиция',
-        blank=True,
     )
     place = models.ForeignKey(
         'Place',
