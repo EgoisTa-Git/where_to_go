@@ -34,7 +34,6 @@ class AdminPlace(SortableAdminBase, admin.ModelAdmin):
 class AdminImage(SortableAdminMixin, admin.ModelAdmin):
     fields = (
         'place',
-        # ('place', 'position'),
         'get_preview',
         'image',
     )
