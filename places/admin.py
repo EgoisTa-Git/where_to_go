@@ -1,10 +1,12 @@
 from django.contrib import admin
 from django.utils.html import format_html
+from adminsortable2.admin import SortableAdminMixin
+from adminsortable2.admin import SortableAdminBase, SortableTabularInline
 
 from .models import Place, Image
 
 
-class ImageInline(admin.TabularInline):
+class ImageInline(SortableTabularInline):
     model = Image
     readonly_fields = [
         'get_preview',
@@ -19,7 +21,7 @@ class ImageInline(admin.TabularInline):
 
 
 @admin.register(Place)
-class AdminPlace(admin.ModelAdmin):
+class AdminPlace(SortableAdminBase, admin.ModelAdmin):
     list_display = [
         'title',
     ]
@@ -29,19 +31,17 @@ class AdminPlace(admin.ModelAdmin):
 
 
 @admin.register(Image)
-class AdminImage(admin.ModelAdmin):
+class AdminImage(SortableAdminMixin, admin.ModelAdmin):
     fields = (
-        ('place', 'position'),
+        'place',
+        # ('place', 'position'),
         'get_preview',
         'image',
     )
-    list_editable = [
-        'position',
-    ]
     list_display = [
-        'place',
-        'get_preview',
         'position',
+        'get_preview',
+        'place',
     ]
     list_filter = [
         'place'

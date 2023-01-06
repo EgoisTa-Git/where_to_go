@@ -31,6 +31,8 @@ class Image(models.Model):
     )
     position = models.IntegerField(
         'Позиция',
+        default=0,
+        db_index=True,
     )
     place = models.ForeignKey(
         'Place',
@@ -41,3 +43,8 @@ class Image(models.Model):
 
     def __str__(self):
         return f'{self.position} {self.place}'
+
+    class Meta:
+        ordering = (
+            'position',
+        )
