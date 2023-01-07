@@ -5,7 +5,8 @@
 ![site.png](.gitbook/assets/site.png)
 
 ## Демо-версия сайта
-Доступна по ссылке: [WhereToGo](https://wheretogo.pythonanywhere.com/)
+Доступна по ссылке: [WhereToGo](https://egoista.pythonanywhere.com/)
+Администрирование сайта: [Тут](https://egoista.pythonanywhere.com/admin/)
 
 ## Запуск
 
