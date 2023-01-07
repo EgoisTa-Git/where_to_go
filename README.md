@@ -6,6 +6,7 @@
 
 ## Демо-версия сайта
 Доступна по ссылке: [WhereToGo](https://egoista.pythonanywhere.com/)
+
 Администрирование сайта: [Тут](https://egoista.pythonanywhere.com/admin/)
 
 ## Запуск
