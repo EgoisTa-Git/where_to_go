@@ -38,6 +38,41 @@ python manage.py runserver
 - `SECRET_KEY` — секретный ключ проекта
 - `ALLOWED_HOSTS` — смотри [документацию Django](https://docs.djangoproject.com/en/3.1/ref/settings/#allowed-hosts).
 
+## Добавление новых локаций
+
+Для добавления новых локаций можно использовать [панель администратора](https://egoista.pythonanywhere.com/admin/) 
+или использовать команду из терминала:
+```bash
+python manage.py load_place --json my_place.json
+```
+
+*Для пропуска загрузки картинок используйте:*
+
+```bash
+python manage.py load_place --json my_place.json --skip_imgs
+```
+
+### Формат JSON файла
+
+Для корректной работы скрипта необходим следущий формат JSON файла:
+
+```json
+{
+    "title": "Название места",
+    "imgs": [
+        "https://example.com/image1.jpg",
+        "https://example.com/image2.jpg",
+        "https://example.com/image3.jpg"
+    ],
+    "description_short": "Краткое описание места",
+    "description_long": "Полное описание локации. Допускается использование html-разметки.",
+    "coordinates": {
+        "lng": "37.50169",
+        "lat": "55.816591"
+    }
+}
+```
+
 ## Цели проекта
 
 Тестовые данные взяты с сайта [KudaGo](https://kudago.com).
