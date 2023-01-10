@@ -15,10 +15,10 @@ class Place(models.Model):
         'Описание',
         blank=True,
     )
-    lng_coordinate = models.FloatField(
+    lng = models.FloatField(
         'Долгота',
     )
-    lat_coordinate = models.FloatField(
+    lat = models.FloatField(
         'Широта',
     )
 

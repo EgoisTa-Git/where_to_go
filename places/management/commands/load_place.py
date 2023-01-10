@@ -39,8 +39,8 @@ class Command(BaseCommand):
             title=json_place['title'],
             description_short=json_place['description_short'],
             description_long=json_place['description_long'],
-            lng_coordinate=json_place['coordinates']['lng'],
-            lat_coordinate=json_place['coordinates']['lat'],
+            lng=json_place['coordinates']['lng'],
+            lat=json_place['coordinates']['lat'],
         )
         self.stdout.write(
             self.style.SUCCESS(f"Place {json_place['title']} created!")

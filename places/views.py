@@ -12,8 +12,8 @@ def index(request):
             'geometry': {
                 'type': 'Point',
                 'coordinates': [
-                    place.lng_coordinate,
-                    place.lat_coordinate,
+                    place.lng,
+                    place.lat,
                 ]
             },
             'properties': {
@@ -39,8 +39,8 @@ def place_detail(request, place_id):
         'description_short': place.description_short,
         'description_long': place.description_long,
         'coordinates': {
-            'lat': place.lat_coordinate,
-            'lng': place.lng_coordinate,
+            'lat': place.lat,
+            'lng': place.lng,
         },
     }
     return JsonResponse(content, safe=True)
