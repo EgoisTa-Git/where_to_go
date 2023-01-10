@@ -24,7 +24,7 @@ def index(request):
         }
         serialized_places.append(place)
     collection = {'type': 'FeatureCollection', 'features': serialized_places}
-    return render(request, 'places/index.html', context={'data': collection})
+    return render(request, 'places/index.html', context={'places': collection})
 
 
 def place_detail(request, place_id):
