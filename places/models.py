@@ -9,6 +9,7 @@ class Place(models.Model):
     )
     description_short = models.TextField(
         'Краткое описание',
+        blank=True,
     )
     description_long = HTMLField(
         'Описание',
