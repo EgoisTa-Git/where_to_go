@@ -29,13 +29,9 @@ def index(request):
 
 def place_detail(request, place_id):
     place = get_object_or_404(Place, pk=place_id)
-    images = place.images.order_by('position')
-    image_urls = []
-    for image in images:
-        image_urls.append(image.image.url)
     content = {
         'title': place.title,
-        'imgs': image_urls,
+        'imgs': [image.image.url for image in place.images.order_by('position')],
         'description_short': place.description_short,
         'description_long': place.description_long,
         'coordinates': {
