@@ -29,7 +29,7 @@ def index(request):
 
 def place_detail(request, place_id):
     place = get_object_or_404(Place, pk=place_id)
-    images = place.images.all().order_by('position')
+    images = place.images.order_by('position')
     image_urls = []
     for image in images:
         image_urls.append(image.image.url)
