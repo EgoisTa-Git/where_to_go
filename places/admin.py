@@ -1,8 +1,8 @@
-from django.contrib import admin
-from django.utils.html import format_html
 from adminsortable2.admin import SortableAdminMixin
 from adminsortable2.admin import SortableAdminBase, SortableTabularInline
+from django.contrib import admin
 
+from .get_image import get_html_preview
 from .models import Place, Image
 
 
@@ -12,12 +12,9 @@ class ImageInline(SortableTabularInline):
         'get_preview',
     ]
 
-    def get_preview(self, obj):
-        return format_html(
-            '<img src="{url}" height={height}/>',
-            url=obj.image.url,
-            height=100,
-        )
+    @staticmethod
+    def get_preview(obj):
+        return get_html_preview(obj)
 
 
 @admin.register(Place)
@@ -52,9 +49,6 @@ class AdminImage(SortableAdminMixin, admin.ModelAdmin):
         'get_preview',
     ]
 
-    def get_preview(self, obj):
-        return format_html(
-            '<img src="{url}" height={height}/>',
-            url=obj.image.url,
-            height=200,
-        )
+    @staticmethod
+    def get_preview(obj):
+        return get_html_preview(obj)
