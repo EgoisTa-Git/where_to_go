@@ -2,6 +2,7 @@ import json
 
 import requests
 from pathlib import Path
+from urllib.parse import urlparse
 
 from django.core.files import File
 from django.core.files.temp import NamedTemporaryFile
@@ -11,15 +12,26 @@ from django.conf import settings
 from places.models import Place, Image
 
 
+def json_url(raw_url):
+    url = urlparse(raw_url)
+    if all((url.scheme, url.netloc)):
+        return raw_url
+    raise CommandError('Invalid URL')
+
+
 class Command(BaseCommand):
     help = 'Add new point to map'
 
     def add_arguments(self, parser):
         parser.add_argument(
-            '--json',
+            '--file',
             type=Path,
-            required=True,
             help='Path to JSON file',
+        )
+        parser.add_argument(
+            '--url',
+            type=json_url,
+            help='URL to JSON file',
         )
         parser.add_argument(
             '--skip_imgs',
@@ -28,13 +40,27 @@ class Command(BaseCommand):
         )
 
     def handle(self, *args, **options):
-        json_path = Path.joinpath(settings.BASE_DIR, options['json'])
-        if json_path.suffix != '.json':
-            raise CommandError('Wrong file type, JSON needed!')
-        if not Path.exists(json_path):
-            raise CommandError('File not found!')
-        with open(json_path, 'r') as file:
-            json_place = json.load(file)
+        if options['file'] and options['url']:
+            raise CommandError(
+                'Both arguments("url" and "file") are specified. Choose one!'
+            )
+        if not (options['file'] or options['url']):
+            raise CommandError('No action requested. Add argument!')
+
+        if options['file']:
+            json_path = Path.joinpath(settings.BASE_DIR, options['file'])
+            if json_path.suffix != '.json':
+                raise CommandError('Wrong file type, JSON needed!')
+            if not Path.exists(json_path):
+                raise CommandError('File not found!')
+            with open(json_path, 'r') as file:
+                json_place = json.load(file)
+
+        if options['url']:
+            response = requests.get(options['url'])
+            response.raise_for_status()
+            json_place = response.json()
+
         Place.objects.get_or_create(
             title=json_place['title'],
             description_short=json_place['description_short'],
@@ -45,6 +71,7 @@ class Command(BaseCommand):
         self.stdout.write(
             self.style.SUCCESS(f"Place {json_place['title']} created!")
         )
+
         if not options['skip_imgs']:
             place = Place.objects.get(title=json_place['title'])
             existing_images = [

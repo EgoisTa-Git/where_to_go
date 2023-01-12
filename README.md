@@ -42,19 +42,25 @@ python manage.py runserver
 
 Для добавления новых локаций можно использовать [панель администратора](https://egoista.pythonanywhere.com/admin/) 
 или использовать команду из терминала:
+* Для загрузки локального JSON файла:
 ```bash
-python manage.py load_place --json my_place.json
+python manage.py load_place --file my_place.json
+```
+
+* Для загрузки JSON файла по внешней ссылке:
+```bash
+python manage.py load_place --url http://example.com/my_place.json
 ```
 
 *Для пропуска загрузки картинок используйте:*
 
 ```bash
-python manage.py load_place --json my_place.json --skip_imgs
+python manage.py load_place --file my_place.json --skip_imgs
 ```
 
 ### Формат JSON файла
 
-Для корректной работы скрипта необходим следущий формат JSON файла:
+Для корректной работы скрипта необходим следующий формат JSON файла:
 
 ```json
 {
