@@ -19,6 +19,43 @@ def json_url(raw_url):
     raise CommandError('Invalid URL')
 
 
+def create_place(json_place):
+    Place.objects.get_or_create(
+        title=json_place['title'],
+        description_short=json_place['description_short'],
+        description_long=json_place['description_long'],
+        lng=json_place['coordinates']['lng'],
+        lat=json_place['coordinates']['lat'],
+    )
+
+
+def add_images(obj, json_place):
+    place = Place.objects.get(title=json_place['title'])
+    existing_images = [
+        Path(image.image.url).name for image in place.images.all()
+    ]
+    for image_url in json_place['imgs']:
+        image_path = Path(image_url)
+        if image_path.name not in existing_images:
+            img = Image()
+            serialized_image = requests.get(image_url).content
+            img.place = place
+            img.position = json_place['imgs'].index(image_url)
+            img_temp = NamedTemporaryFile(delete=True)
+            img_temp.write(serialized_image)
+            img_temp.flush()
+            img.image.save(image_path.name, File(img_temp))
+            img.save()
+            obj.stdout.write(
+                obj.style.SUCCESS(f'Image {image_path.name} saved!')
+            )
+        else:
+            obj.stdout.write(
+                obj.style.WARNING(f'Image {image_path.name} exists!')
+            )
+            continue
+
+
 class Command(BaseCommand):
     help = 'Add new point to map'
 
@@ -44,6 +81,7 @@ class Command(BaseCommand):
             raise CommandError(
                 'Both arguments("url" and "file") are specified. Choose one!'
             )
+
         if not (options['file'] or options['url']):
             raise CommandError('No action requested. Add argument!')
 
@@ -61,39 +99,10 @@ class Command(BaseCommand):
             response.raise_for_status()
             json_place = response.json()
 
-        Place.objects.get_or_create(
-            title=json_place['title'],
-            description_short=json_place['description_short'],
-            description_long=json_place['description_long'],
-            lng=json_place['coordinates']['lng'],
-            lat=json_place['coordinates']['lat'],
-        )
+        create_place(json_place)
         self.stdout.write(
             self.style.SUCCESS(f'Place {json_place["title"]} created!')
         )
 
         if not options['skip_imgs']:
-            place = Place.objects.get(title=json_place['title'])
-            existing_images = [
-                Path(image.image.url).name for image in place.images.all()
-            ]
-            for image_url in json_place['imgs']:
-                image_path = Path(image_url)
-                if image_path.name not in existing_images:
-                    img = Image()
-                    serialized_image = requests.get(image_url).content
-                    img.place = place
-                    img.position = json_place['imgs'].index(image_url)
-                    img_temp = NamedTemporaryFile(delete=True)
-                    img_temp.write(serialized_image)
-                    img_temp.flush()
-                    img.image.save(image_path.name, File(img_temp))
-                    img.save()
-                    self.stdout.write(
-                        self.style.SUCCESS(f'Image {image_path.name} saved!')
-                    )
-                else:
-                    self.stdout.write(
-                        self.style.WARNING(f'Image {image_path.name} exists!')
-                    )
-                    continue
+            add_images(self, json_place)
