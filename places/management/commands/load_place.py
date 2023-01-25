@@ -87,12 +87,13 @@ class Command(BaseCommand):
 
         if options['file']:
             json_path = Path.joinpath(settings.BASE_DIR, options['file'])
-            if json_path.suffix != '.json':
-                raise CommandError('Wrong file type, JSON needed!')
             if not Path.exists(json_path):
                 raise CommandError('File not found!')
             with open(json_path, 'r') as file:
-                json_place = json.load(file)
+                try:
+                    json_place = json.load(file)
+                except json.JSONDecodeError:
+                    raise CommandError('Wrong file type, JSON needed!')
 
         if options['url']:
             response = requests.get(options['url'])
