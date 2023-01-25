@@ -21,11 +21,13 @@ def json_url(raw_url):
 
 def create_place(json_place):
     Place.objects.get_or_create(
-        title=json_place['title'],
-        description_short=json_place['description_short'],
-        description_long=json_place['description_long'],
         lng=json_place['coordinates']['lng'],
         lat=json_place['coordinates']['lat'],
+        defaults={
+            'title': json_place['title'],
+            'description_short': json_place['description_short'],
+            'description_long': json_place['description_long'],
+        },
     )
 
 
