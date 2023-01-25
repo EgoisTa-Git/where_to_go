@@ -12,10 +12,7 @@ def index(request):
             'type': 'Feature',
             'geometry': {
                 'type': 'Point',
-                'coordinates': [
-                    place.lng,
-                    place.lat,
-                ]
+                'coordinates': [place.lng, place.lat]
             },
             'properties': {
                 'title': place.title,
@@ -24,6 +21,7 @@ def index(request):
             }
         }
         serialized_places.append(place)
+
     collection = {'type': 'FeatureCollection', 'features': serialized_places}
     return render(request, 'places/index.html', context={'places': collection})
 
