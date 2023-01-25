@@ -20,15 +20,20 @@ def json_url(raw_url):
 
 
 def create_place(json_place):
-    Place.objects.get_or_create(
-        lng=json_place['coordinates']['lng'],
-        lat=json_place['coordinates']['lat'],
-        defaults={
-            'title': json_place['title'],
-            'description_short': json_place['description_short'],
-            'description_long': json_place['description_long'],
-        },
-    )
+    try:
+        Place.objects.get_or_create(
+            lng=json_place['coordinates']['lng'],
+            lat=json_place['coordinates']['lat'],
+            defaults={
+                'title': json_place['title'],
+                'description_short': json_place.get('description_short', ''),
+                'description_long': json_place.get('description_long', ''),
+            },
+        )
+    except KeyError:
+        raise CommandError(
+            'No required fields found! Use JSON format from README.md!'
+        )
 
 
 def add_images(obj, json_place):
@@ -36,6 +41,13 @@ def add_images(obj, json_place):
     existing_images = [
         Path(image.image.url).name for image in place.images.all()
     ]
+    try:
+        json_place['imgs']
+    except KeyError:
+        obj.stdout.write(
+            obj.style.WARNING('No images found!')
+        )
+        return
     for image_url in json_place['imgs']:
         image_path = Path(image_url)
         if image_path.name not in existing_images:
