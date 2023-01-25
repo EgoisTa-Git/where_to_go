@@ -69,7 +69,7 @@ class Command(BaseCommand):
             lat=json_place['coordinates']['lat'],
         )
         self.stdout.write(
-            self.style.SUCCESS(f"Place {json_place['title']} created!")
+            self.style.SUCCESS(f'Place {json_place["title"]} created!')
         )
 
         if not options['skip_imgs']:
@@ -90,10 +90,10 @@ class Command(BaseCommand):
                     img.image.save(image_path.name, File(img_temp))
                     img.save()
                     self.stdout.write(
-                        self.style.SUCCESS(f"Image {image_path.name} saved!")
+                        self.style.SUCCESS(f'Image {image_path.name} saved!')
                     )
                 else:
                     self.stdout.write(
-                        self.style.WARNING(f"Image {image_path.name} exists!")
+                        self.style.WARNING(f'Image {image_path.name} exists!')
                     )
                     continue
