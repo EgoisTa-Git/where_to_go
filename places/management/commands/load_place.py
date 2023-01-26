@@ -21,7 +21,7 @@ def json_url(raw_url):
 
 def create_place(json_place):
     try:
-        place = Place.objects.get_or_create(
+        place, created = Place.objects.get_or_create(
             lng=json_place['coordinates']['lng'],
             lat=json_place['coordinates']['lat'],
             defaults={
@@ -34,7 +34,7 @@ def create_place(json_place):
         raise CommandError(
             'No required fields found! Use JSON format from README.md!'
         )
-    return place
+    return place, created
 
 
 def add_images(obj, json_place, place):
@@ -114,10 +114,15 @@ class Command(BaseCommand):
             response.raise_for_status()
             json_place = response.json()
 
-        place = create_place(json_place)
+        place, created = create_place(json_place)
+        if not created:
+            self.stdout.write(
+                self.style.WARNING(f'{json_place["title"]} already exists!')
+            )
+            return
+
         self.stdout.write(
             self.style.SUCCESS(f'Place {json_place["title"]} created!')
         )
-
         if not options['skip_imgs']:
             add_images(self, json_place, place)
