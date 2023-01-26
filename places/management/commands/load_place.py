@@ -1,11 +1,11 @@
 import json
+from hashlib import md5
 
 import requests
 from pathlib import Path
 from urllib.parse import urlparse
 
-from django.core.files import File
-from django.core.files.temp import NamedTemporaryFile
+from django.core.files.base import ContentFile
 from django.core.management.base import BaseCommand, CommandError
 from django.conf import settings
 
@@ -38,9 +38,6 @@ def create_place(json_place):
 
 
 def add_images(obj, json_place, place):
-    existing_images = [
-        Path(image.image.url).name for image in place.images.all()
-    ]
     try:
         json_place['imgs']
     except KeyError:
@@ -48,26 +45,21 @@ def add_images(obj, json_place, place):
             obj.style.WARNING('No images found!')
         )
         return
-    for image_url in json_place['imgs']:
-        image_path = Path(image_url)
-        if image_path.name not in existing_images:
-            img = Image()
-            serialized_image = requests.get(image_url).content
-            img.place = place
-            img.position = json_place['imgs'].index(image_url)
-            img_temp = NamedTemporaryFile(delete=True)
-            img_temp.write(serialized_image)
-            img_temp.flush()
-            img.image.save(image_path.name, File(img_temp))
-            img.save()
-            obj.stdout.write(
-                obj.style.SUCCESS(f'Image {image_path.name} saved!')
-            )
-        else:
-            obj.stdout.write(
-                obj.style.WARNING(f'Image {image_path.name} exists!')
-            )
-            continue
+    for position, image_url in enumerate(json_place['imgs']):
+        image_content = requests.get(image_url).content
+        image_name = md5(image_content).hexdigest() + Path(image_url).suffix
+        content_file = ContentFile(
+            image_content,
+            name=image_name,
+        )
+        Image.objects.create(
+            place=place,
+            image=content_file,
+            position=position,
+        )
+        obj.stdout.write(
+            obj.style.SUCCESS(f'Image {image_name} saved!')
+        )
 
 
 class Command(BaseCommand):
