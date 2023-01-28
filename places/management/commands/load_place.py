@@ -87,11 +87,7 @@ class Command(BaseCommand):
             raise CommandError(
                 'Both arguments("url" and "file") are specified. Choose one!'
             )
-
-        if not (options['file'] or options['url']):
-            raise CommandError('No action requested. Add argument!')
-
-        if options['file']:
+        elif options['file']:
             json_path = Path.joinpath(settings.BASE_DIR, options['file'])
             if not Path.exists(json_path):
                 raise CommandError('File not found!')
@@ -100,11 +96,12 @@ class Command(BaseCommand):
                     json_place = json.load(file)
                 except json.JSONDecodeError:
                     raise CommandError('Wrong file type, JSON needed!')
-
-        if options['url']:
+        elif options['url']:
             response = requests.get(options['url'])
             response.raise_for_status()
             json_place = response.json()
+        else:
+            raise CommandError('No action requested. Add argument!')
 
         place, created = create_place(json_place)
         if not created:
