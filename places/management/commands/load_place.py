@@ -37,15 +37,15 @@ def create_place(json_place):
     return place, created
 
 
-def add_images(obj, json_place, place):
+def add_images(obj, place_attributes, place):
     try:
-        json_place['imgs']
+        place_attributes['imgs']
     except KeyError:
         obj.stdout.write(
             obj.style.WARNING('No images found!')
         )
         return
-    for position, image_url in enumerate(json_place['imgs']):
+    for position, image_url in enumerate(place_attributes['imgs']):
         image_content = requests.get(image_url).content
         image_name = md5(image_content).hexdigest() + Path(image_url).suffix
         content_file = ContentFile(
@@ -93,25 +93,25 @@ class Command(BaseCommand):
                 raise CommandError('File not found!')
             with open(json_path, 'r') as file:
                 try:
-                    json_place = json.load(file)
+                    place_attributes = json.load(file)
                 except json.JSONDecodeError:
                     raise CommandError('Wrong file type, JSON needed!')
         elif options['url']:
             response = requests.get(options['url'])
             response.raise_for_status()
-            json_place = response.json()
+            place_attributes = response.json()
         else:
             raise CommandError('No action requested. Add argument!')
 
-        place, created = create_place(json_place)
+        place, created = create_place(place_attributes)
         if not created:
             self.stdout.write(
-                self.style.WARNING(f'{json_place["title"]} already exists!')
+                self.style.WARNING(f'{place_attributes["title"]} already exists!')
             )
             return
 
         self.stdout.write(
-            self.style.SUCCESS(f'Place {json_place["title"]} created!')
+            self.style.SUCCESS(f'Place {place_attributes["title"]} created!')
         )
         if not options['skip_imgs']:
-            add_images(self, json_place, place)
+            add_images(self, place_attributes, place)
