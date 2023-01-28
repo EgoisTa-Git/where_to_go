@@ -13,8 +13,8 @@ class ImageInline(SortableTabularInline):
     ]
 
     @staticmethod
-    def get_preview(place):
-        return get_html_preview(place)
+    def get_preview(image):
+        return get_html_preview(image)
 
 
 @admin.register(Place)
